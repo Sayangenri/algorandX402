@@ -46,38 +46,66 @@ sequenceDiagram
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Testing
+
+Follow these steps to configure, run, and test the payment-locked joke API locally.
+
+### 📋 Prerequisites
+- **Node.js** (v18 or higher recommended)
+- **Groq API Key**: Get one from [Groq Console](https://console.groq.com/)
+
+---
 
 ### 1. Install Dependencies
+Clone the repository, navigate into the directory, and install the required NPM packages:
 ```bash
 npm install
 ```
 
-### 2. Generate Wallet Keys
-Run the wallet generator script to create test accounts for the Merchant and the User:
+### 2. Configure Environment Variables
+Create a file named `.env` in the root of the project and add your Groq API key:
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
+> [!NOTE]
+> The remaining environment variables (`MERCHANT_ADDRESS`, `MERCHANT_MNEMONIC`, `USER_ADDRESS`, and `USER_MNEMONIC`) will be automatically generated and appended in the next step.
+
+### 3. Generate Wallet Keys
+Run the wallet generator script to automatically create Algorand Testnet credentials for both the **Merchant** and the **User**:
 ```bash
 node wallet.js
 ```
-This automatically appends the address and secret mnemonic of both wallets to your `.env` file.
+This script will output the new addresses to the terminal and automatically write them into your `.env` file.
 
-### 3. Fund the User Wallet
-To perform payments, the User wallet needs Testnet ALGO:
-1. Copy the `User Address` printed in your terminal or inside `.env`.
-2. Go to the [Algorand Testnet Dispenser](https://bank.testnet.algorand.network/).
-3. Paste the address, solve the captcha, and click **Dispense**.
+### 4. Fund the User Wallet
+Because the client pays 0.1 ALGO for every joke request, the User wallet needs Testnet funds:
+1. Open the `.env` file or look at the terminal output to copy the `USER_ADDRESS`.
+2. Visit the [Algorand Testnet Dispenser](https://bank.testnet.algorand.network/).
+3. Paste the address, complete the captcha, and click **Dispense** to receive free Testnet ALGO.
 
-### 4. Start the Server
-Run the API server:
+---
+
+### 💻 How to Start the App
+Start the Express API server on the host machine:
 ```bash
 node server.js
 ```
-The server will boot up and start listening on port `3000`.
+The server will start listening at `http://localhost:3000`. Keep this process running.
 
-### 5. Run the Test Client
-In a new terminal window, execute the automated payment and request flow:
+---
+
+### 🧪 How to Test the App
+Open a **new terminal tab or window** and execute the client simulator:
 ```bash
 node pay.js
 ```
+
+#### What the test client does:
+1. Queries the User wallet's current ALGO balance.
+2. Initiates a payment of `0.1 ALGO` to the Merchant's address on the Algorand Testnet.
+3. Submits the signed transaction to the blockchain network and waits for confirmation (~3-4 seconds).
+4. Calls the `/joke` endpoint with the confirmed transaction ID (`txId`).
+5. Prints the response joke returned by the server.
 
 ---
 
