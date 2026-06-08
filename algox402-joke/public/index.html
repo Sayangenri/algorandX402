@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoPay AI Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    <div class="glass-bg-2"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-bolt-lightning-charge pulse-icon"></i>
+                <h1>AlgoPay<span>AI</span></h1>
+            </div>
+            <div class="subtitle">On-Chain HTTP 402 Pay-Per-Request Gateway</div>
+            <div class="stats-badge" id="global-stats">
+                <span id="stat-txs">0 Txns</span>
+                <span class="divider">|</span>
+                <span id="stat-algos">0.00 ALGO Earned</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Panel: Wallets & Status -->
+            <section class="panel left-panel">
+                <!-- User Wallet Card -->
+                <div class="glass-card wallet-card user-wallet">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-wallet"></i> User Wallet (Sender)</h3>
+                        <span class="network-badge">Testnet</span>
+                    </div>
+                    <div class="address-container">
+                        <span class="label">Address</span>
+                        <code class="address-value" id="user-address">Loading...</code>
+                    </div>
+                    <div class="balance-display">
+                        <span class="amount" id="user-balance">0.00</span>
+                        <span class="unit">ALGO</span>
+                    </div>
+                    <div class="mnemonic-section">
+                        <button class="btn btn-secondary btn-sm" id="toggle-mnemonic-btn">
+                            <i class="fa-solid fa-eye-slash"></i> Show Seed Phrase
+                        </button>
+                        <div class="mnemonic-box hidden" id="user-mnemonic-container">
+                            <code id="user-mnemonic">Loading mnemonic...</code>
+                        </div>
+                    </div>
+                    <div class="action-footer">
+                        <a href="https://bank.testnet.algorand.network/" target="_blank" class="btn btn-tertiary btn-sm">
+                            <i class="fa-solid fa-faucet-drip"></i> Dispenser Faucet
+                        </a>
+                        <button class="btn btn-secondary btn-sm" id="refresh-balance-btn">
+                            <i class="fa-solid fa-rotate"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Merchant Wallet Card -->
+                <div class="glass-card wallet-card merchant-wallet">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-store"></i> Merchant Wallet (Receiver)</h3>
+                    </div>
+                    <div class="address-container">
+                        <span class="label">Address</span>
+                        <code class="address-value" id="merchant-address">Loading...</code>
+                    </div>
+                    <div class="balance-display">
+                        <span class="amount" id="merchant-balance">0.00</span>
+                        <span class="unit">ALGO</span>
+                    </div>
+                    <div class="stats-mini-grid">
+                        <div class="mini-stat">
+                            <span class="stat-label">Jokes</span>
+                            <span class="stat-val" id="mini-joke-count">0</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="stat-label">Quotes</span>
+                            <span class="stat-val" id="mini-quote-count">0</span>
+                        </div>
+                        <div class="mini-stat">
+                            <span class="stat-label">Stories</span>
+                            <span class="stat-val" id="mini-story-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Generator, Flow, Output -->
+            <section class="panel right-panel">
+                
+                <!-- Prompt Setup Panel -->
+                <div class="glass-card prompt-card">
+                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Select Content & Request</h2>
+                    
+                    <div class="pricing-selector">
+                        <div class="price-option active" data-type="joke" data-price="0.1">
+                            <div class="icon-wrap"><i class="fa-solid fa-face-laugh-beam"></i></div>
+                            <div class="details">
+                                <span class="title">Joke Creator</span>
+                                <span class="price">0.10 ALGO</span>
+                            </div>
+                        </div>
+                        <div class="price-option" data-type="quote" data-price="0.05">
+                            <div class="icon-wrap"><i class="fa-solid fa-quote-left"></i></div>
+                            <div class="details">
+                                <span class="title">Philosophical Quote</span>
+                                <span class="price">0.05 ALGO</span>
+                            </div>
+                        </div>
+                        <div class="price-option" data-type="story" data-price="0.2">
+                            <div class="icon-wrap"><i class="fa-solid fa-book-open"></i></div>
+                            <div class="details">
+                                <span class="title">Short Bedtime Story</span>
+                                <span class="price">0.20 ALGO</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="prompt-input">Custom Prompt (Optional)</label>
+                        <input type="text" id="prompt-input" placeholder="e.g., Physics joke / Quote about perseverance / Cyberpunk story..." />
+                    </div>
+
+                    <button class="btn btn-primary" id="generate-btn">
+                        <span class="btn-text">Generate AI Content</span>
+                        <span class="btn-loader hidden"><i class="fa-solid fa-spinner fa-spin"></i> Processing...</span>
+                    </button>
+                </div>
+
+                <!-- Sequence Flow Visualizer -->
+                <div class="glass-card flow-card">
+                    <h3><i class="fa-solid fa-network-wired"></i> HTTP 402 Workflow Live Tracker</h3>
+                    <div class="flow-steps">
+                        <div class="step" id="step-1">
+                            <div class="step-num">1</div>
+                            <div class="step-label">402 Check</div>
+                        </div>
+                        <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="step" id="step-2">
+                            <div class="step-num">2</div>
+                            <div class="step-label">Sign Txn</div>
+                        </div>
+                        <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="step" id="step-3">
+                            <div class="step-num">3</div>
+                            <div class="step-label">Submit Testnet</div>
+                        </div>
+                        <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="step" id="step-4">
+                            <div class="step-num">4</div>
+                            <div class="step-label">Verify TxID</div>
+                        </div>
+                        <div class="step-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+                        <div class="step" id="step-5">
+                            <div class="step-num">5</div>
+                            <div class="step-label">Response OK</div>
+                        </div>
+                    </div>
+                    <div class="flow-console" id="flow-console">
+                        <p class="console-placeholder"><i class="fa-solid fa-terminal"></i> Terminal logs will appear here during transaction...</p>
+                    </div>
+                </div>
+
+                <!-- Output Display -->
+                <div class="glass-card output-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-comment-dots"></i> AI Generated Output</h3>
+                        <button class="btn btn-secondary btn-sm hidden" id="copy-btn"><i class="fa-solid fa-copy"></i> Copy</button>
+                    </div>
+                    <div class="output-content" id="output-content">
+                        <p class="placeholder-text">Select your options and click generate to run the payment flow.</p>
+                    </div>
+                    <div class="tx-badge hidden" id="successful-tx-badge">
+                        <i class="fa-solid fa-circle-check"></i> Paid via TxID: <a href="#" target="_blank" id="explorer-link">N/A</a>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>&copy; 2026 AlgoPay AI Sandbox. Made for Algorand HTTP 402 Standard Showcase.</p>
+    </footer>
+
+    <!-- Algorand SDK library -->
+    <script src="https://cdn.jsdelivr.net/npm/algosdk@3.5.2/dist/browser/algosdk.min.js"></script>
+    <!-- Frontend JS logic -->
+    <script src="app.js"></script>
+</body>
+</html>
